@@ -1,0 +1,26 @@
+routes:
+  - prefix: '/api'
+    groups:
+    - routePath: '/v1'
+      middlewares:
+        # If languages aren't managed via the URL endpoint + the base site handling
+        # - 'Site\SiteEndpoints\Middleware\PreferredClientLanguageSelector'
+        # Extbase & TSFE support
+        - 'Site\SiteEndpoints\Middleware\ExtbaseBridge'
+      routes:
+        - methods: [GET]
+          routePath: '/article'
+          callback: 'Site\SiteEndpoints\Controller\EndpointsController->test'
+        - methods: [GET]
+          routePath: '/test'
+          callback: 'Site\SiteTests\Controller\TestController->test'
+    - routePath: '/v2'
+      middlewares:
+        # Extbase & TSFE support
+        - 'Site\SiteEndpoints\Middleware\ExtbaseBridge'
+      routes:
+        - methods: [GET]
+          # It also supports wildcard expressions so anything at the asteriks (*)
+          # can be a value – e.g. '/dash-strings-like-this' or '/1-2-3-this-one'
+          routePath: '/*'
+          callback: 'Site\SiteEndpoints\Controller\EndpointsController->wildcard'
