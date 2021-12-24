@@ -57,7 +57,7 @@ class EndpointsInitiator implements MiddlewareInterface
             unset($config['prefix']);
 
             foreach ($config['groups'] as $group) {
-                if ($group['routePath'] === $vSlug || $group['routePath'] === '/*') {
+                if ($group['routePath'] === $vSlug || $group['routePath'] === '/*' || $group['routePath'] === 'SITE_ENDPOINTS_SKIP') {
                     /** @var AppFactory $appFactory */
                     $appFactory = GeneralUtility::makeInstance(
                         AppFactory::class
