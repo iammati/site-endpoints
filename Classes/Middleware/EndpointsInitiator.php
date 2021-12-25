@@ -8,10 +8,12 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Site\SiteEndpoints\Configuration\Event\GroupRouteResolveEvent;
 use Site\SiteEndpoints\Factory\AppFactory;
 use Site\SiteEndpoints\Provider\EndpointsProvider;
 use Site\SiteEndpoints\Service\EndpointsService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 
 /**
  * Checks the site configuration if there are any routes configured that we could handle here.
@@ -21,6 +23,12 @@ class EndpointsInitiator implements MiddlewareInterface
 {
     protected ?EndpointsProvider $endpointsProvider = null;
     protected ?EndpointsService $endpointsService = null;
+    protected ?EventDispatcher $eventDispatcher = null;
+
+    public function __construct(EventDispatcher $eventDispatcher = null)
+    {
+        $this->eventDispatcher = $eventDispatcher ?? GeneralUtility::makeInstance(EventDispatcher::class);
+    }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
@@ -57,7 +65,22 @@ class EndpointsInitiator implements MiddlewareInterface
             unset($config['prefix']);
 
             foreach ($config['groups'] as $group) {
-                if ($group['routePath'] === $vSlug || $group['routePath'] === '/*' || $group['routePath'] === 'SITE_ENDPOINTS_SKIP') {
+                $event = new GroupRouteResolveEvent($group, $vSlug);
+                $dispatchedEvent = $this->eventDispatcher->dispatch($event);
+                $group = $dispatchedEvent->getGroup();
+                $vSlug = $dispatchedEvent->getVSlug();
+
+                $routePath = $group['routePath'];
+
+                if ($vSlug === 'SITE_ENDPOINTS_SKIP') {
+                    continue;
+                }
+
+                if (in_array($routePath, [
+                    $vSlug,
+                    '/*',
+                    'SITE_ENDPOINTS_SKIP'
+                ])) {
                     /** @var AppFactory $appFactory */
                     $appFactory = GeneralUtility::makeInstance(
                         AppFactory::class
