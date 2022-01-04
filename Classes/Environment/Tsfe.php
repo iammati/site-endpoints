@@ -10,7 +10,10 @@ use TYPO3\CMS\Core\Context\LanguageAspectFactory;
 use TYPO3\CMS\Core\Context\TypoScriptAspect;
 use TYPO3\CMS\Core\Context\UserAspect;
 use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
+use TYPO3\CMS\Core\Domain\Repository\PageRepository;
+use TYPO3\CMS\Core\Error\Http\ServiceUnavailableException;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
+use TYPO3\CMS\Core\Http\ImmediateResponseException;
 use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Core\Localization\Locales;
 use TYPO3\CMS\Core\Routing\PageArguments;
@@ -20,13 +23,12 @@ use TYPO3\CMS\Core\TypoScript\TemplateService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
-use TYPO3\CMS\Core\Domain\Repository\PageRepository;
-use TYPO3\CMS\Core\Error\Http\ServiceUnavailableException;
-use TYPO3\CMS\Core\Http\ImmediateResponseException;
 
 class Tsfe implements SingletonInterface
 {
+    /** @var array<mixed> */
     private array $tsfeCache = [];
+    /** @var array<mixed> */
     private array $requestCache = [];
 
     public function changeLanguageContext(int $pageId, int $language): void
@@ -65,7 +67,7 @@ class Tsfe implements SingletonInterface
 
         /** @var Context $context */
         $context = GeneralUtility::makeInstance(Context::class);
-        $this->changeLanguageContext((int)$pageId, (int)$language);
+        $this->changeLanguageContext((int) $pageId, (int) $language);
 
         /** @var SiteFinder $siteFinder */
         $siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
@@ -78,7 +80,8 @@ class Tsfe implements SingletonInterface
             $this->requestCache[$cacheId] = $request
                 ->withAttribute('site', $site)
                 ->withAttribute('language', $siteLanguage)
-                ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_FE);
+                ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_FE)
+            ;
         }
         $GLOBALS['TYPO3_REQUEST'] = $this->requestCache[$cacheId];
 
@@ -132,7 +135,7 @@ class Tsfe implements SingletonInterface
 
         $GLOBALS['TSFE'] = $this->tsfeCache[$cacheId];
         Locales::setSystemLocaleFromSiteLanguage($siteLanguage);
-        $this->changeLanguageContext((int)$pageId, (int)$language);
+        $this->changeLanguageContext((int) $pageId, (int) $language);
     }
 
     /**

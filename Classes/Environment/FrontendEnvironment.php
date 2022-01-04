@@ -26,21 +26,8 @@ class FrontendEnvironment implements SingletonInterface
      * @throws ServiceUnavailableException
      * @throws ImmediateResponseException
      */
-    public function initializeTsfe(int $pageId, int $language = 0)
+    public function initializeTsfe(int $pageId, int $language = 0): void
     {
         $this->tsfe->initializeTsfe($pageId, $language);
-    }
-
-    public function getConfigurationFromPageId($pageId, $path, $language = 0)
-    {
-        return $this->typoScript->getConfigurationFromPageId($pageId, $path, $language);
-    }
-
-    public function isAllowedPageType(array $pageRecord, $configurationName = 'pages'): bool
-    {
-        $configuration = $this->getConfigurationFromPageId($pageRecord['uid'], '');
-        $allowedPageTypes = $configuration->getIndexQueueAllowedPageTypesArrayByConfigurationName($configurationName);
-
-        return in_array($pageRecord['doktype'], $allowedPageTypes);
     }
 }

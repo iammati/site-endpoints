@@ -19,7 +19,7 @@ use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 use TYPO3\CMS\Frontend\Middleware\FrontendUserAuthenticator;
 
 /**
- * Extbase and TSFE initializer
+ * Extbase and TSFE initializer.
  */
 class ExtbaseBridge implements MiddlewareInterface
 {

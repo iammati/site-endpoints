@@ -15,6 +15,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 class EndpointsProvider
 {
     protected EndpointsService $endpointsService;
+    /** @var array<mixed> */
     protected array $routes = [];
 
     public function __construct()
@@ -62,7 +63,7 @@ class EndpointsProvider
         $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['site_endpoints']['routes'][$routeIdentifier->getIdentifier()] = $route;
     }
 
-    public function loadYaml(string $fileName)
+    public function loadYaml(string $fileName): void
     {
         if (!file_exists($fileName)) {
             throw new FileNotFoundException($fileName);
@@ -73,7 +74,7 @@ class EndpointsProvider
         foreach ($routes as $route) {
             $identifier = $route['prefix'];
 
-            /** @todo: Throw an exception if it's set or allow overrides? */
+            // @todo: Throw an exception if it's set or allow overrides?
             // if (isset($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['site_endpoints']['routes'][$identifier])) {
             //     throw new \Exception(
             //         sprintf(

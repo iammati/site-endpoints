@@ -8,6 +8,7 @@ class Route
 {
     protected ?string $routePath = '';
     protected ?string $callback = '';
+    /** @var array<string> */
     protected ?array $methods = ['GET'];
 
     public function setRoutePath(string $routePath): self
@@ -41,6 +42,11 @@ class Route
         return $this;
     }
 
+    /**
+     * @param array<string> $methods
+     *
+     * @return Route
+     */
     public function setMethods(array $methods): self
     {
         $this->methods = $methods;
@@ -48,6 +54,9 @@ class Route
         return $this;
     }
 
+    /**
+     * @return array<string>
+     */
     public function getMethods(): array
     {
         return $this->methods;

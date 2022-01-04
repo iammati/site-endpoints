@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Site\SiteEndpoints\Factory;
 
+use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -17,15 +18,23 @@ use TYPO3\CMS\Extbase\Mvc\Web\RequestBuilder;
 
 class AppFactory
 {
-    private string $extensionName;
-    private string $pluginName;
+    /** @var array<string> */
     protected array $route;
     protected ServerRequestInterface $request;
     protected RequestHandlerInterface $handler;
     protected RequestBuilder $extbaseRequestBuilder;
     protected Dispatcher $extbaseDispatcher;
     protected EndpointsService $endpointsService;
+    private string $extensionName;
+    private string $pluginName;
 
+    /**
+     * @param array<array<string>|string> $config
+     *
+     * @throws InvalidArgumentException
+     *
+     * @return AppFactory|ResponseInterface
+     */
     public function create(ServerRequestInterface $request, RequestHandlerInterface $handler, array $config): self|ResponseInterface
     {
         $this->endpointsService = GeneralUtility::makeInstance(
@@ -43,7 +52,7 @@ class AppFactory
         $this->pluginName = $config['pluginName'];
 
         // Last compare to make sure requested URI maps the configured route
-        $slug = str_replace($prefix.$routePath, '', $path);
+        $slug = str_replace($prefix . $routePath, '', $path);
         $route = null;
 
         foreach ($routes as $item) {
@@ -55,6 +64,7 @@ class AppFactory
 
             if ($routePath === $slug || $routePath === '/*') {
                 $route = $item;
+
                 break;
             }
         }
@@ -64,7 +74,7 @@ class AppFactory
         }
 
         // Allowing only configured methods inside the $route to continue
-        $methods = $route['methods'];
+        $methods = (array)$route['methods'];
 
         if (!in_array($request->getMethod(), $methods)) {
             return $handler->handle($request);
@@ -103,11 +113,14 @@ class AppFactory
         $extbaseAttribute->setControllerName($cnuControllerName);
         $extbaseAttribute->setControllerActionName($actionName);
 
-        $response = $this->extbaseDispatcher->dispatch($extbaseRequest);
-
-        return $response;
+        return $this->extbaseDispatcher->dispatch($extbaseRequest);
     }
 
+    /**
+     * @param null|array<mixed> $middlewares
+     *
+     * @throws InvalidArgumentException
+     */
     protected function iterateMiddlewares(?array $middlewares = []): void
     {
         foreach ($middlewares as $middleware) {

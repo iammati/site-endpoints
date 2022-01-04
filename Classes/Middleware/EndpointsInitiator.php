@@ -12,8 +12,8 @@ use Site\SiteEndpoints\Configuration\Event\GroupRouteResolveEvent;
 use Site\SiteEndpoints\Factory\AppFactory;
 use Site\SiteEndpoints\Provider\EndpointsProvider;
 use Site\SiteEndpoints\Service\EndpointsService;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Checks the site configuration if there are any routes configured that we could handle here.
@@ -79,7 +79,7 @@ class EndpointsInitiator implements MiddlewareInterface
                 if (in_array($routePath, [
                     $vSlug,
                     '/*',
-                    'SITE_ENDPOINTS_SKIP'
+                    'SITE_ENDPOINTS_SKIP',
                 ])) {
                     /** @var AppFactory $appFactory */
                     $appFactory = GeneralUtility::makeInstance(
@@ -88,7 +88,7 @@ class EndpointsInitiator implements MiddlewareInterface
                         $request,
                         $handler,
                         array_merge(
-                            ['prefix' => $prefix,],
+                            ['prefix' => $prefix],
                             $group,
                         )
                     );
@@ -101,7 +101,7 @@ class EndpointsInitiator implements MiddlewareInterface
                         return $handler->handle($request);
                     }
 
-                    return $appFactory->handle($request);
+                    return $appFactory->handle();
                 }
             }
         }

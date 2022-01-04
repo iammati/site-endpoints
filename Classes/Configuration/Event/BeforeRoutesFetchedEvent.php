@@ -6,20 +6,28 @@ namespace Site\SiteEndpoints\Configuration\Event;
 
 final class BeforeRoutesFetchedEvent
 {
+    /** @var array<string> */
     private array $routes;
 
+    /**
+     * @param array<string> $routes
+     */
     public function __construct(array $routes)
     {
         $this->routes = $routes;
     }
 
+    /** @return array<string> */
     public function getRoutes(): array
     {
         return $this->routes;
     }
 
-    public function setRoutes(array $routes)
+    /** @param array<string> $routes */
+    public function setRoutes(array $routes): self
     {
         $this->routes = $routes;
+
+        return $this;
     }
 }

@@ -9,7 +9,11 @@ class RouteGroup
     protected ?string $extensionName = '';
     protected ?string $pluginName = '';
     protected ?string $routePath = '';
+    /** @var array<string> */
     protected ?array $middlewares = [];
+
+    /** @var Route[] */
+    protected ?array $routes = [];
 
     public function setExtensionName(string $extensionName): self
     {
@@ -35,9 +39,6 @@ class RouteGroup
         return $this;
     }
 
-    /** @var Route[] */
-    protected ?array $routes = [];
-
     public function setRoutePath(string $routePath): self
     {
         $this->routePath = $routePath;
@@ -57,6 +58,9 @@ class RouteGroup
         return $this;
     }
 
+    /**
+     * @return array<string>
+     */
     public function getMiddlewares(): array
     {
         return $this->middlewares;

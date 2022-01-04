@@ -41,11 +41,14 @@ class RequestedLanguageToSiteLanguageResolverService
         return $site->getDefaultLanguage();
     }
 
+    /**
+     * @return array<mixed>
+     */
     protected function fetchLanguagePreferencesFromRequest(ServerRequestInterface $request): array
     {
-        $requestedLanguages = explode(',', $request->getHeaderLine('accept-language') ?? 'en');
+        $requestedLanguages = explode(',', $request->getHeaderLine('accept-language') ? $request->getHeaderLine('accept-language') : 'en');
 
-        return array_map(function($language) {
+        return array_map(function ($language) {
             [$locale] = explode(';', $language);
 
             return strtolower(str_replace('-', '_', $locale));

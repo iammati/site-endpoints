@@ -10,12 +10,12 @@ return [
             'target' => Middleware\EndpointsInitiator::class,
 
             'after' => [
-                'typo3/cms-frontend/site'
+                'typo3/cms-frontend/site',
             ],
 
             'before' => [
-                'typo3/cms-frontend/base-redirect-resolver'
+                'typo3/cms-frontend/base-redirect-resolver',
             ],
         ],
-    ]
+    ],
 ];

@@ -11,7 +11,7 @@ class RouteIdentifier
     /** @var RouteGroup[] */
     protected ?array $routeGroups = [];
 
-    public function setIdentifier(string $identifier)
+    public function setIdentifier(string $identifier): self
     {
         $this->identifier = $identifier;
 

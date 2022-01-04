@@ -11,6 +11,7 @@ use TYPO3\CMS\Core\Site\Entity\SiteInterface;
 class EndpointsService
 {
     protected ServerRequestInterface $request;
+    /** @var array<mixed> */
     protected ?array $routes = [];
 
     /** @throws \InvalidArgumentException */
@@ -21,22 +22,19 @@ class EndpointsService
         /** @var SiteInterface $site */
         $site = $request->getAttribute('site');
 
-        if (!$site instanceof Site) {
-            return false;
+        if ($site instanceof Site) {
+            try {
+                $routes = $site->getAttribute('routes');
+
+                $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['site_endpoints']['routes'] += $routes;
+                $this->routes = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['site_endpoints']['routes'];
+            } catch (\InvalidArgumentException $e) {
+                // No routes found at all inside the site configuration
+            }
         }
-
-        try {
-            $routes = $site->getAttribute('routes');
-        } catch (\InvalidArgumentException $e) {
-            // No routes found at all inside the site configuration
-            return false;
-        }
-
-        $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['site_endpoints']['routes'] += $routes;
-
-        $this->routes = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['site_endpoints']['routes'];
     }
 
+    /** @return array<mixed> */
     public function getRoutes(): array
     {
         return $this->routes;
@@ -51,11 +49,10 @@ class EndpointsService
             return null;
         }
 
-        $vSlug = '/'.$segments[2] ?? null;
-
-        return $vSlug;
+        return '/' . $segments[2];
     }
 
+    /** @return array<string> */
     public function resolveCallback(string $callback): array
     {
         $splittedCallback = explode('->', $callback);
